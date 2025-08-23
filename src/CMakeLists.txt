@@ -3,6 +3,7 @@ add_library(boshiamyEx SHARED
     state.cpp
     engine.cpp
     enginefactory.cpp
+    dict.cpp
 )
 target_link_libraries(boshiamyEx PRIVATE Fcitx5::Core)
 set_target_properties(boshiamyEx PROPERTIES PREFIX "")
@@ -16,7 +17,6 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/boshiamyEx-addon.conf" RENAME boshiam
 # Input Method registration file
 install(FILES "boshiamyEx.conf" DESTINATION "${FCITX_INSTALL_PKGDATADIR}/inputmethod")
 
-# copy boshiamy.txt to ${FCITX_INSTALL_PKGDATADIR}/boshiamyEx
-execute_process(COMMAND mkdir -p ${FCITX_INSTALL_PKGDATADIR}/boshiamyEx)
-install(FILES "boshiamy.txt" DESTINATION "${FCITX_INSTALL_PKGDATADIR}/boshiamyEx")
+# copy dictionary files to ${FCITX_INSTALL_PKGDATADIR} (usually /usr/share/fcitx5/boshiamyEx will be created)
+install(DIRECTORY "boshiamyEx" DESTINATION "${FCITX_INSTALL_PKGDATADIR}")
 
