@@ -28,6 +28,8 @@ namespace BoshiamyEx {
             // triggered when we switch IM from this to other, or the focusing window changes
             void reset(const fcitx::InputMethodEntry &entry, fcitx::InputContextEvent &event) override;
 
+            fcitx::Instance *getInstance() const;
+
         private:
             fcitx::Instance *instance_;
             fcitx::FactoryFor<BoshiamyEx::State> factory_;

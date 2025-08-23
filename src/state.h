@@ -31,6 +31,12 @@ namespace BoshiamyEx {
 
             // called by keyEvent
             void candidateKeyEvent(fcitx::KeyEvent &event);
+
+            // construct CandidateList and draw UI
+            void updateUI();
+
+            // only update CandidateList
+            void rerender();
     };
 
 }

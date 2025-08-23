@@ -28,11 +28,16 @@ namespace BoshiamyEx {
         keyEvent.inputContext() -> propertyFor(&factory_) -> keyEvent(keyEvent);
     }
 
+    fcitx::Instance *Engine::getInstance() const
+    {
+        return instance_;
+    }
+
     void Engine::reset(const fcitx::InputMethodEntry &entry, fcitx::InputContextEvent &event)
     {
-        // to be continued
         FCITX_UNUSED(entry);
         FCITX_UNUSED(event);
+        event.inputContext() -> propertyFor(&factory_) -> reset();
     }
 
 }

@@ -4,6 +4,7 @@ add_library(boshiamyEx SHARED
     engine.cpp
     enginefactory.cpp
     dict.cpp
+    candidate.cpp
 )
 target_link_libraries(boshiamyEx PRIVATE Fcitx5::Core)
 set_target_properties(boshiamyEx PROPERTIES PREFIX "")
