@@ -24,7 +24,7 @@ namespace BoshiamyEx {
     {
         public:
             Dict();
-            std::vector<std::string> getCandidateVector(const std::string token) const;
+            std::vector<std::string> *getCandidateVector(const std::string token) const;
             std::string getCandidate(const std::string token, const int pos = 0) const;
             DictChoice getBestChoice(const std::string target) const;
 

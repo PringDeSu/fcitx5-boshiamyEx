@@ -64,10 +64,10 @@ namespace BoshiamyEx {
         }
     }
     
-    std::vector<std::string> Dict::getCandidateVector(const std::string token) const
+    std::vector<std::string> *Dict::getCandidateVector(const std::string token) const
     {
         auto it = dict_.find(token);
-        return (it == dict_.end() ? std::vector<std::string>() : it -> second);
+        return (it == dict_.end() ? std::vector<std::string>() : &(it -> second));
     }
 
     std::string Dict::getCandidate(const std::string token, const int pos) const
