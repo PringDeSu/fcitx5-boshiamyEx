@@ -4,27 +4,33 @@
 #include <fcitx/inputcontext.h>         // fcitx::InputContext
 #include <fcitx/inputcontextproperty.h> // fcitx::InputContextProperty
 #include <fcitx-utils/inputbuffer.h>    // fcitx::InputBuffer
-#include <fcitx/event.h>
 
 namespace BoshiamyEx {
 
-    class Engine; // declaration of methods is in engine.h
+    class Engine; // method declaration in engine.h
 
     class State :
-        public fcitx::InputContextProperty
+        public fcitx::InputContextProperty,
+        public fcitx::InputBuffer
     {
         public:
             State(Engine *engine, fcitx::InputContext *ic);
 
+            // called by Engine::keyEvent
             void keyEvent(fcitx::KeyEvent &event);
+
+            // called by Engine::reset
             void reset();
 
         private:
             Engine *engine_;
             fcitx::InputContext *ic_;
-            fcitx::InputBuffer buffer_;
+            
+            // called by keyEvent
+            bool isZhuyinMode() const;
 
-            void commitBuffer();
+            // called by keyEvent
+            void candidateKeyEvent(fcitx::KeyEvent &event);
     };
 
 }

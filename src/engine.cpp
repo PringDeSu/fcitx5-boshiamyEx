@@ -4,7 +4,8 @@
 namespace BoshiamyEx {
 
     Engine::Engine(fcitx::Instance *instance) :
-        dict(),
+        fcitx::InputMethodEngineV2(),
+        Dict(),
         instance_(instance),
         factory_([this](fcitx::InputContext &ic) -> State* {
             return new State(this, &ic);
@@ -18,7 +19,7 @@ namespace BoshiamyEx {
         FCITX_UNUSED(entry);
         FCITX_INFO() << keyEvent.key() << " isRelease=" << keyEvent.isRelease();
 
-        // only filtered out key-releasing event and shortcut
+        // only filter out key-releasing event and keys with modifiers
         if (keyEvent.isRelease() || keyEvent.key().states()) {
             return;
         }
@@ -29,9 +30,9 @@ namespace BoshiamyEx {
 
     void Engine::reset(const fcitx::InputMethodEntry &entry, fcitx::InputContextEvent &event)
     {
+        // to be continued
         FCITX_UNUSED(entry);
-        // call State::reset()
-        event.inputContext() -> propertyFor(&factory_) -> reset();
+        FCITX_UNUSED(event);
     }
 
 }

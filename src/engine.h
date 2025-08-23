@@ -12,7 +12,8 @@ namespace BoshiamyEx {
     class State;  // declaration of methods is in state.h
 
     class Engine :
-        public fcitx::InputMethodEngineV2
+        public fcitx::InputMethodEngineV2,
+        public Dict
     {
         public:
             // dict stores (token, targets) and (target, bestChoice) pairs, being the core of the IM
