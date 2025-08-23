@@ -4,21 +4,28 @@
 namespace BoshiamyEx {
 
     Engine::Engine(fcitx::Instance *instance) :
+        fcitx::InputMethodEngineV2(),
+        Dict(),
         instance_(instance),
         factory_([this](fcitx::InputContext &ic) -> State* {
             return new State(this, &ic);
         })
     {
-        // to be continued: load char map
-        // useful resourses:
-        // #include <fcitx-utils/standardpaths.h>
-        // fcitx::StandardPaths::global().fcitxPath("pkgdatadir")
+        instance -> inputContextManager().registerProperty("State", &factory_);
     }
 
     void Engine::keyEvent(const fcitx::InputMethodEntry &entry, fcitx::KeyEvent &keyEvent)
     {
         FCITX_UNUSED(entry);
         FCITX_INFO() << keyEvent.key() << " isRelease=" << keyEvent.isRelease();
+
+        // only filter out key-releasing event and keys with modifiers
+        if (keyEvent.isRelease() || keyEvent.key().states()) {
+            return;
+        }
+
+        // call State::keyEvent()
+        keyEvent.inputContext() -> propertyFor(&factory_) -> keyEvent(keyEvent);
     }
 
     void Engine::reset(const fcitx::InputMethodEntry &entry, fcitx::InputContextEvent &event)
