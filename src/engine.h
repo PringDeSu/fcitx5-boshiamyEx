@@ -5,15 +5,19 @@
                                       // fcitx::KeyEvent, fcix::InputContextEvent
 #include <fcitx/instance.h>           // fcitx::Instance
 #include <fcitx/inputcontext.h>       // fcitx::FactoryFor
+#include "dict.h"
 
 namespace BoshiamyEx {
 
-    class State;  // method declaration in state.h
+    class State;  // declaration of methods is in state.h
 
     class Engine :
         public fcitx::InputMethodEngineV2
     {
         public:
+            // dict stores (token, targets) and (target, bestChoice) pairs, being the core of the IM
+            Dict dict;
+
             // called by BoshiamyEx::EngineFactory::create()
             Engine(fcitx::Instance *instance);
 

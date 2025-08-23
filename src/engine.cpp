@@ -4,28 +4,34 @@
 namespace BoshiamyEx {
 
     Engine::Engine(fcitx::Instance *instance) :
+        dict(),
         instance_(instance),
         factory_([this](fcitx::InputContext &ic) -> State* {
             return new State(this, &ic);
         })
     {
-        // to be continued: load char map
-        // useful resourses:
-        // #include <fcitx-utils/standardpaths.h>
-        // fcitx::StandardPaths::global().fcitxPath("pkgdatadir")
+        instance -> inputContextManager().registerProperty("State", &factory_);
     }
 
     void Engine::keyEvent(const fcitx::InputMethodEntry &entry, fcitx::KeyEvent &keyEvent)
     {
         FCITX_UNUSED(entry);
         FCITX_INFO() << keyEvent.key() << " isRelease=" << keyEvent.isRelease();
+
+        // only filtered out key-releasing event and shortcut
+        if (keyEvent.isRelease() || keyEvent.key().states()) {
+            return;
+        }
+
+        // call State::keyEvent()
+        keyEvent.inputContext() -> propertyFor(&factory_) -> keyEvent(keyEvent);
     }
 
     void Engine::reset(const fcitx::InputMethodEntry &entry, fcitx::InputContextEvent &event)
     {
-        // to be continued
         FCITX_UNUSED(entry);
-        FCITX_UNUSED(event);
+        // call State::reset()
+        event.inputContext() -> propertyFor(&factory_) -> reset();
     }
 
 }
