@@ -8,7 +8,7 @@ namespace BoshiamyEx {
 
     DictChoice::DictChoice() :
         token(39, ' '),
-        pos(0)
+        pos(-1)
     {}
 
     DictChoice::DictChoice(const std::string _token, const int _pos) :
@@ -29,16 +29,27 @@ namespace BoshiamyEx {
         bestChoice_()
     {
         // get the dict file name
-        const std::filesystem::path DICT_TXT_FILE_DIR =
+        const std::filesystem::path DICT_FILE_DIR =
             fcitx::StandardPaths::global().fcitxPath("pkgdatadir") / "boshiamyEx";
 
-        const std::filesystem::path DICT_TXT_FILE_NAME[] = { "additional.dict", "boshiamy.dict" };
+        // const std::filesystem::path DICT_TXT_FILE_NAME[] = { "additional.dict", "boshiamy.dict" };
+        const struct {
+            std::filesystem::path path_;
+            bool isZhuyinFile_;
+        } DICT_FILE_NAME[] = {
+            { "additional.dict", false },
+            { "boshiamy.dict", false },
+            { "zhuyin.dict", true },
+        };
 
-        for (auto &file_name : DICT_TXT_FILE_NAME) {
+        for (auto file_name : DICT_FILE_NAME) {
 
-            std::filesystem::path completePath = DICT_TXT_FILE_DIR / file_name;
+            std::filesystem::path completePath = DICT_FILE_DIR / file_name.path_;
             FCITX_INFO() << "Loading boshiamyEx dictionary: " << completePath << " ...";
             std::ifstream dict_file(completePath);
+
+            const static std::string ZhuyinEndingChars = " 6347";
+            const static std::string ZhuyinPrefix = "\';";
 
             // constructing token-target pairs
             if (dict_file.is_open()) {
@@ -46,10 +57,22 @@ namespace BoshiamyEx {
                 std::string target, token;
                 while (dict_file >> token >> target) {
 
+                    if (file_name.isZhuyinFile_) {
+                        // add space to zhuyin tokens since we can't read the space
+                        token = ZhuyinPrefix + token;
+                        if (ZhuyinEndingChars.find(token.back()) >= ZhuyinEndingChars.size()) {
+                            token.push_back(ZhuyinEndingChars[0]);
+                        }
+                    }
+
                     auto &v = dict_[token];
                     int pos = v.size();
                     v.push_back(target);
-                    bestChoice_[target] = std::min(bestChoice_[target], DictChoice(token, pos));
+
+                    // zhuyin tokens are not included in best choice
+                    if (!file_name.isZhuyinFile_) {
+                        bestChoice_[target] = std::min(bestChoice_[target], DictChoice(token, pos));
+                    }
 
                 }
 
