@@ -35,8 +35,10 @@ namespace BoshiamyEx {
 
         if (event.key().check(FcitxKey_Escape)) {
             // reset
-            event.accept();
-            reset();
+            if (size()) { // without "if", we end up with no functionality of escape
+                event.accept();
+                reset();
+            }
             updateUI();
             return;
         }
