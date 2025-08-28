@@ -24,6 +24,10 @@ namespace BoshiamyEx {
         );
     }
 
+    std::string DictChoice::toString() const {
+        return token + (pos ? "(" + std::to_string(pos) + ")" : "");
+    }
+
     Dict::Dict() :
         dict_(),
         bestChoice_()

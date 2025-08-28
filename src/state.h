@@ -1,6 +1,9 @@
 #ifndef _FCITX5_BOSHIAMYEX_STATE_H_
 #define _FCITX5_BOSHIAMYEX_STATE_H_
 
+#include <chrono>
+#include "candidate.h" 
+#include "dict.h"
 #include <fcitx/inputcontext.h>         // fcitx::InputContext
 #include <fcitx/inputcontextproperty.h> // fcitx::InputContextProperty
 #include <fcitx-utils/inputbuffer.h>    // fcitx::InputBuffer
@@ -22,21 +25,27 @@ namespace BoshiamyEx {
             // called by Engine::reset
             void reset();
 
+
         private:
             Engine *engine_;
             fcitx::InputContext *ic_;
             
             // called by keyEvent
-            bool isZhuyinMode() const;
+            bool isZhuyinMode(const std::string token) const;
 
             // called by keyEvent
             void candidateKeyEvent(fcitx::KeyEvent &event);
 
             // construct CandidateList and draw UI
+            // preedit section not affected
             void updateUI();
 
             // only update CandidateList
             void rerender();
+
+            // commit the words in candidateList
+            void commitWord(const std::shared_ptr<fcitx::CandidateList> candidateList, const int idx);
+
     };
 
 }

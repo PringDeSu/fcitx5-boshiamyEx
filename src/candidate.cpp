@@ -17,6 +17,11 @@ namespace BoshiamyEx {
         ic -> commitString(target_);
     }
 
+    std::string CandidateWord::getTarget() const
+    {
+        return target_;
+    }
+
     /////////////////////////////// CandidateList ///////////////////////////////
 
     const std::vector<fcitx::Key> CandidateList::SELECTION_KEYS = std::vector<fcitx::Key>({
@@ -135,5 +140,9 @@ namespace BoshiamyEx {
         }
     }
 
+    const CandidateWord &CandidateList::getCandidateWord(int idx) const
+    {
+        return *candidates_[idx];
+    }
 }
 

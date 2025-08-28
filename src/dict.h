@@ -16,6 +16,8 @@ namespace BoshiamyEx {
         DictChoice();
         DictChoice(const std::string _token, const int _pos);
 
+        std::string toString() const;
+
         bool operator<(const DictChoice &other) const;
 
     };

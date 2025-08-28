@@ -23,6 +23,11 @@ namespace BoshiamyEx {
         const static std::string ZhuyinAcceptKeySyms = "1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/- 6347";
         const static std::string ZhuyinEndingKeySyms = " 6347";
 
+        // reset best-choice tip first
+        ic_ -> inputPanel().setPreedit(fcitx::Text());
+        ic_ -> updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+        ic_ -> updatePreedit();
+
         if (event.key().check(FcitxKey_BackSpace)) {
             // backspace
             if (size()) { // without "if", we end up with no functionality of backspace
@@ -45,7 +50,7 @@ namespace BoshiamyEx {
 
         // append input to buffer or call candidateKeyEvent
         // here criteria depends on whether we are in Zhuyin mode
-        if (isZhuyinMode()) {
+        if (isZhuyinMode(userInput())) {
 
             if (ZhuyinEndingKeySyms.find(userInput().back()) < ZhuyinEndingKeySyms.size()) {
                 // assuming the token is completely entered
@@ -91,12 +96,12 @@ namespace BoshiamyEx {
         updateUI();
     }
 
-    bool State::isZhuyinMode() const
+    bool State::isZhuyinMode(const std::string token) const
     {
         const static std::string ZhuyinPrefix = "\';";
         return (
-            size() >= ZhuyinPrefix.size() &&
-            userInput().substr(0, ZhuyinPrefix.size()) == ZhuyinPrefix
+            token.size() >= ZhuyinPrefix.size() &&
+            token.substr(0, ZhuyinPrefix.size()) == ZhuyinPrefix
         );
     }
 
@@ -108,8 +113,10 @@ namespace BoshiamyEx {
             if (size()) {
                 event.accept();
                 if (candidateList) {
-                    candidateList -> candidate(candidateList -> cursorIndex()).select(ic_);
+                    ic_ -> updatePreedit();
+                    commitWord(candidateList, candidateList -> cursorIndex());
                 }
+                // std::this_thread::sleep_for(std::chrono::seconds(2));
                 reset();
             }
             return;
@@ -126,7 +133,7 @@ namespace BoshiamyEx {
         if (idx >= 0) {
             // number pressed
             if (idx < candidateList -> size()) {
-                candidateList -> candidate(idx).select(ic_);
+                commitWord(candidateList, idx);
                 reset();
             }
             return;
@@ -170,6 +177,7 @@ namespace BoshiamyEx {
     {
         fcitx::InputPanel &ip = ic_ -> inputPanel();
         
+        const fcitx::Text preeditOld = ip.preedit();
         ip.reset();
         
         const std::vector<std::string> *target = engine_ -> getCandidateVector(userInput());
@@ -185,6 +193,7 @@ namespace BoshiamyEx {
                 fcitx::TextFormatFlag::NoFlag
             )
         ));
+        ip.setPreedit(preeditOld);
 
         ic_ -> updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
         ic_ -> updatePreedit();
@@ -193,6 +202,21 @@ namespace BoshiamyEx {
     void State::rerender()
     {
         ic_ -> updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+    }
+
+    void State::commitWord(const std::shared_ptr<fcitx::CandidateList> candidateList, const int idx)
+    {
+        CandidateList * const candidateList_ = static_cast<CandidateList*>(candidateList.get());
+        const CandidateWord &cand = candidateList_ -> getCandidateWord(idx);
+        cand.select(ic_);
+        const DictChoice dc = DictChoice(userInput(), idx);
+        const std::string target = cand.getTarget();
+        const DictChoice bestChoice = engine_ -> getBestChoice(target);
+        if (isZhuyinMode(dc.token) || bestChoice < dc) {
+            ic_ -> inputPanel().setPreedit(fcitx::Text(bestChoice.toString()));
+            ic_ -> updateUserInterface(fcitx::UserInterfaceComponent::InputPanel);
+            ic_ -> updatePreedit();
+        }
     }
 
 }

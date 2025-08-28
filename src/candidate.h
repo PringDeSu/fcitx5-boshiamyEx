@@ -18,6 +18,9 @@ namespace BoshiamyEx {
             // pure-virtual function implementation
             void select(fcitx::InputContext *ic) const;
 
+            // called by State functions when committing
+            std::string getTarget() const;
+
         private:
             std::string target_;
     };
@@ -55,6 +58,9 @@ namespace BoshiamyEx {
 
             // pure-virtual function implementation from fcitx::CursorModifiableCandidateList
             void setCursorIndex(int idx);
+
+            // used by myself (not fcitx)
+            const CandidateWord &getCandidateWord(int idx) const;
 
         private:
             const static int CANDIDATELIST_SIZE;
