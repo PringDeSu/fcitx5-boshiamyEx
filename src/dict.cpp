@@ -18,14 +18,14 @@ namespace BoshiamyEx {
         
     bool DictChoice::operator<(const DictChoice &other) const {
         return (
-            token.size() == other.token.size() ?
+            (token.size() + (pos != 0) == (other.token.size() + (other.pos != 0))) ?
             pos < other.pos :
-            token.size() < other.token.size()
+            (token.size() + (pos != 0) < (other.token.size() + (other.pos != 0)))
         );
     }
 
     std::string DictChoice::toString() const {
-        return token + (pos ? "(" + std::to_string(pos) + ")" : "");
+        return token + (pos ? " " + std::to_string(pos) : "");
     }
 
     Dict::Dict() :
